@@ -1,5 +1,5 @@
 venv/
-*.egg-info/
+Project9.egg-info/
 logs/
 .DS_Store
 Thumbs.db
