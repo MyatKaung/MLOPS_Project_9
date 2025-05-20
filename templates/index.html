@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Smart Manufacturing Efficiency Predictor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background-color: #e3f2fd;
+      margin: 0;
+      padding: 0;
+    }
+
+    .header {
+      text-align: center;
+      padding: 40px 20px 10px;
+    }
+
+    .header h1 {
+      font-size: 30px;
+      color: #0d47a1;
+    }
+
+    .header p {
+      font-size: 16px;
+      color: #555;
+    }
+
+    .main {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 30px;
+      padding: 30px 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      width: 500px;
+      box-sizing: border-box;
+    }
+
+    .card h2 {
+      background-color: #0d47a1;
+      color: white;
+      padding: 12px 18px;
+      border-radius: 8px;
+      margin: -30px -30px 20px -30px;
+      font-size: 18px;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    form div {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-weight: 500;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      border: 1px solid #bbb;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .btn {
+      grid-column: span 2;
+      background: #1976d2;
+      color: white;
+      font-size: 16px;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .btn:hover {
+      background: #1565c0;
+    }
+
+    .reset-btn {
+      background: #ccc;
+      color: black;
+    }
+
+    .result-box {
+      text-align: center;
+    }
+
+    .result-box .emoji {
+      font-size: 36px;
+    }
+
+    .result-box .high {
+      color: #2e7d32;
+    }
+
+    .result-box .medium {
+      color: #f9a825;
+    }
+
+    .result-box .low {
+      color: #c62828;
+    }
+
+    .about-section {
+      background: white;
+      padding: 40px 20px;
+      margin: 30px auto 0;
+      max-width: 1200px;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .about-section h2 {
+      background-color: #0d47a1;
+      color: white;
+      padding: 12px 18px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+
+    .about-grid {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .about-card {
+      background: #e3f2fd;
+      flex: 1;
+      min-width: 250px;
+      max-width: 32%;
+      padding: 20px;
+      border-radius: 10px;
+      box-sizing: border-box;
+    }
+
+    .about-card h3 {
+      color: #0d47a1;
+      margin-bottom: 10px;
+    }
+
+    .about-card p {
+      font-size: 14px;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .main {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      form {
+        grid-template-columns: 1fr;
+      }
+
+      .btn {
+        grid-column: span 1;
+      }
+
+      .about-grid {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .about-card {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>Smart Manufacturing Efficiency Predictor</h1>
+    <p>Enter machine parameters to predict operational efficiency levels</p>
+  </div>
+
+  <div class="main">
+    <!-- Machine Parameters -->
+    <div class="card">
+      <h2>Machine Parameters</h2>
+      <form method="POST">
+        {% for feature in features %}
+        <div>
+          <label>{{ feature.replace("_", " ") }}</label>
+          <input type="text" name="{{ feature }}" placeholder="e.g., {{ loop.index * 10 }}">
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn">Predict Efficiency</button>
+        <button type="button" class="btn reset-btn" onclick="resetForm()">Reset</button>
+      </form>
+    </div>
+
+    <!-- Prediction Results -->
+    <div class="card">
+      <h2>Prediction Results</h2>
+      <div class="result-box">
+        {% if prediction %}
+        <div class="emoji">✅</div>
+        <p>
+          <strong>Efficiency Level:</strong>
+          {% if prediction == 'High' %}
+          <span class="high">↑ {{ prediction }}</span>
+          {% elif prediction == 'Medium' %}
+          <span class="medium">− {{ prediction }}</span>
+          {% elif prediction == 'Low' %}
+          <span class="low">↓ {{ prediction }}</span>
+          {% else %}
+          {{ prediction }}
+          {% endif %}
+        </p>
+        <p>This prediction is based on the machine parameters you provided.</p>
+        {% else %}
+        <div class="emoji">ℹ️</div>
+        <p>No Prediction Yet.<br>Fill in the machine parameters and click Predict Efficiency.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- About Section -->
+  <div class="about-section">
+    <h2>About This Tool</h2>
+    <div class="about-grid">
+      <div class="about-card">
+        <h3>🔍 Predictive Analytics</h3>
+        <p>This tool uses machine learning to predict manufacturing efficiency based on multiple parameters.</p>
+      </div>
+      <div class="about-card">
+        <h3>📈 Real-time Insights</h3>
+        <p>Get immediate efficiency predictions to optimize your manufacturing processes.</p>
+      </div>
+      <div class="about-card">
+        <h3>⚙️ Easy Configuration</h3>
+        <p>Simply input your machine parameters to receive efficiency predictions.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    © 2023 Smart Manufacturing Efficiency Predictor | All Rights Reserved
+  </div>
+
+  <!-- Reset form handler -->
+  <script>
+    function resetForm() {
+      window.location.href = "/";
+    }
+  </script>
+
+</body>
+</html>
