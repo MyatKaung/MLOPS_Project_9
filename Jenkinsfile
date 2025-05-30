@@ -34,7 +34,7 @@ pipeline {
                 }
             }
         }
-        stage('Install Kubectl & ArgoCD CLI') {
+        stage('Install Kubectl & ArgoCD CLI SETUP') {
             steps {
                 echo 'Installing Kubectl and ArgoCD CLI...'
                 // Add actual installation commands here, e.g., using sh ''' ... '''
