@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: mlops-app
-        image: 
+        image: myatkaung/mlops-project9:latest
         ports:
         - containerPort: 5000

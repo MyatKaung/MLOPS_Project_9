@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    enviroment {
+        DOCKER_HUB_REPO = "myatkaung/mlops-project9"
+        DOCKER_HUB_CREDENTIALS_ID = "mlops-project9_docker"
     stages {
         stage('Checkout Github') {
             steps {
@@ -9,12 +12,21 @@ pipeline {
         }        
         stage('Build Docker Image') {
             steps {
-                echo 'Building Docker image...'
+                script {
+                    echo 'Building Docker image...'
+                    dockerImage = docker.build("${DOCKER_HUB_REPO}:latest")
+                 
+                }
             }
         }
         stage('Push Image to DockerHub') {
             steps {
-                echo 'Pushing Docker image to DockerHub...'
+                script {
+                    echo 'Pushing Docker image to DockerHub...'
+                    docker.withRegistry('https://registry.hub.docker.com', ${DOCKER_HUB_CREDENTIALS_ID}) {
+                        dockerImage.push("latest")
+                    }
+                }
             }
         }
         stage('Install Kubectl & ArgoCD CLI') {
