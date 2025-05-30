@@ -1,21 +1,23 @@
 pipeline {
     agent any
-    enviroment {
+    environment { // Corrected spelling
         DOCKER_HUB_REPO = "myatkaung/mlops-project9"
         DOCKER_HUB_CREDENTIALS_ID = "mlops-project9_docker"
+    } // Added missing closing brace for environment
+
     stages {
         stage('Checkout Github') {
             steps {
                 echo 'Checking out code from GitHub...'
                 checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'mlops-project9', url: 'https://github.com/MyatKaung/MLOPS_Project_9.git']])
-		    }
-        }        
+            }
+        }
         stage('Build Docker Image') {
             steps {
                 script {
                     echo 'Building Docker image...'
-                    dockerImage = docker.build("${DOCKER_HUB_REPO}:latest")
-                 
+                    // Use env. to access environment variables
+                    dockerImage = docker.build("${env.DOCKER_HUB_REPO}:latest")
                 }
             }
         }
@@ -23,8 +25,11 @@ pipeline {
             steps {
                 script {
                     echo 'Pushing Docker image to DockerHub...'
-                    docker.withRegistry('https://registry.hub.docker.com', ${DOCKER_HUB_CREDENTIALS_ID}) {
-                        dockerImage.push("latest")
+                    // Use env. for credentials ID and pass directly
+                    docker.withRegistry('https://registry.hub.docker.com', env.DOCKER_HUB_CREDENTIALS_ID) {
+                        dockerImage.push("latest") // You can also push with the full tag: dockerImage.push("${env.DOCKER_HUB_REPO}:latest")
+                                               // or just dockerImage.push() if the tag was included in docker.build() and is the one you want for 'latest'
+                                               // For clarity, pushing "latest" is fine if that's your intent for the 'latest' tag on Docker Hub.
                     }
                 }
             }
@@ -32,14 +37,14 @@ pipeline {
         stage('Install Kubectl & ArgoCD CLI') {
             steps {
                 echo 'Installing Kubectl and ArgoCD CLI...'
+                // Add actual installation commands here, e.g., using sh ''' ... '''
             }
         }
         stage('Apply Kubernetes & Sync App with ArgoCD') {
             steps {
                 echo 'Applying Kubernetes and syncing with ArgoCD...'
+                // Add actual kubectl apply and argocd sync commands here
             }
         }
     }
 }
-
-
